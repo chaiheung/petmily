@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import { ChakraProvider } from "@chakra-ui/react";
-import { createBrowserRouter, RouterProvider, useLocation } from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { Home } from "./page/Home.jsx";
 import { MemberSignup } from "./page/member/MemberSignup.jsx";
 import { MemberLogin } from "./page/member/MemberLogin.jsx";
@@ -27,55 +27,60 @@ import { DiaryCommentWrite } from "./page/diary/diarySrc/diaryPage/diaryComment/
 import { DiaryCommentList } from "./page/diary/diarySrc/diaryPage/diaryComment/DiaryCommentList.jsx";
 import { DiaryComment } from "./page/diary/diarySrc/diaryPage/diaryComment/DiaryComment.jsx";
 import KakaoMap from "./KakaoMap.jsx";
+import {PlaceMap2} from "./page/place/PlaceMap2.jsx";
 
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <Home />,
-    children: [
-      { index: true, element: <MainPage /> }, // 메인페이지 렌더링
-      {
-        path: "diary/:diaryId",
-        element: <DiaryHome />,
-        children: [
-          // 다이어리 하위 경로 설정
-          { path: "comment/view/:id", element: <DiaryBoardView /> }, // 일기 보기
-          { path: "comment/list", element: <DiaryCommentList /> }, // 방명록 목록
-          { path: "comment/write/:id", element: <DiaryCommentWrite /> }, // 방명록 쓰기
-          { path: "comment", element: <DiaryComment /> }, // 방명록
-          { path: "list", element: <DiaryBoardList /> }, // 다이어리 목록
-          { path: "edit/:id", element: <DiaryBoardEdit /> }, // 일기 수정
-          { path: "view/:id", element: <DiaryBoardView /> }, // 일기 보기
-          { path: "write/:id", element: <DiaryBoardWrite /> }, // 일기 쓰기
-        ],
-      },
-      { path: "member/signup", element: <MemberSignup /> }, // 회원 가입
-      { path: "member/login", element: <MemberLogin /> }, // 로그인
-      { path: "member/find", element: <MemberFind /> }, // 비밀번호 찾기
-      { path: "member/page/:id", element: <MemberPage /> }, // 회원 페이지
-      { path: "member/list", element: <MemberList /> }, // 회원 목록
-      { path: "member/edit/:id", element: <MemberEdit /> }, // 회원 정보 수정 및 탈퇴
-      { path: "board/write", element: <BoardWrite /> }, //게시판 글쓰기
-      { path: "board/list", element: <BoardList /> }, //게시판 목록
-      { path: "board/edit/:id", element: <BoardEdit /> }, //게시글 수정
-      { path: "board/:id", element: <BoardView /> }, //게시글 보기
-      { path: "place/map", element: <PlaceMap /> }, // 지도 보기
-      { path: "place/:id", element: <PlaceReview /> }, // 병원 정보 보기
-      { path: "place/local", element: <PlaceLocal /> }, // 로컬 보기
-      { path: "kakao-map", element: <KakaoMap /> }, // KakaoMap 경로 설정
-      { path: "aichat", element: <AIChat /> }, // 챗봇 기능
-    ],
-  },
-]);
 
-function App(props) {
+const App = () => {
+  const [selectedCtprvnCd, setSelectedCtprvnCd] = useState(null);
+
+  const router = createBrowserRouter([
+    {
+      path: "/",
+      element: <Home />,
+      children: [
+        { index: true, element: <MainPage /> }, // 메인페이지 렌더링
+        {
+          path: "diary/:diaryId",
+          element: <DiaryHome />,
+          children: [
+            // 다이어리 하위 경로 설정
+            { path: "comment/view/:id", element: <DiaryBoardView /> }, // 일기 보기
+            { path: "comment/list", element: <DiaryCommentList /> }, // 방명록 목록
+            { path: "comment/write/:id", element: <DiaryCommentWrite /> }, // 방명록 쓰기
+            { path: "comment", element: <DiaryComment /> }, // 방명록
+            { path: "list", element: <DiaryBoardList /> }, // 다이어리 목록
+            { path: "edit/:id", element: <DiaryBoardEdit /> }, // 일기 수정
+            { path: "view/:id", element: <DiaryBoardView /> }, // 일기 보기
+            { path: "write/:id", element: <DiaryBoardWrite /> }, // 일기 쓰기
+          ],
+        },
+        { path: "member/signup", element: <MemberSignup /> }, // 회원 가입
+        { path: "member/login", element: <MemberLogin /> }, // 로그인
+        { path: "member/find", element: <MemberFind /> }, // 비밀번호 찾기
+        { path: "member/page/:id", element: <MemberPage /> }, // 회원 페이지
+        { path: "member/list", element: <MemberList /> }, // 회원 목록
+        { path: "member/edit/:id", element: <MemberEdit /> }, // 회원 정보 수정 및 탈퇴
+        { path: "board/write", element: <BoardWrite /> }, //게시판 글쓰기
+        { path: "board/list", element: <BoardList /> }, //게시판 목록
+        { path: "board/edit/:id", element: <BoardEdit /> }, //게시글 수정
+        { path: "board/:id", element: <BoardView /> }, //게시글 보기
+        { path: "place/map", element: <PlaceMap /> }, // 지도 보기
+        { path: "place/:id", element: <PlaceReview /> }, // 병원 정보 보기
+        { path: "place/local", element: <PlaceLocal /> }, // 로컬 보기
+        { path: "kakao-map", element: <KakaoMap onPolygonSelect={setSelectedCtprvnCd} /> }, // KakaoMap 경로 설정
+        { path: "place-map2", element: <PlaceMap2 ctprvnCd={selectedCtprvnCd} /> }, // PlaceMap2 경로 설정
+        { path: "aichat", element: <AIChat /> }, // 챗봇 기능
+      ],
+    },
+  ]);
+
   return (
-    <LoginProvider>
-      <ChakraProvider>
-        <RouterProvider router={router} />
-      </ChakraProvider>
-    </LoginProvider>
+      <LoginProvider>
+        <ChakraProvider>
+          <RouterProvider router={router} />
+        </ChakraProvider>
+      </LoginProvider>
   );
-}
+};
 
 export default App;

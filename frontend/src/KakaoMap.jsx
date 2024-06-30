@@ -1,31 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Box } from "@chakra-ui/react";
 import axios from "axios";
-import PlaceMap2 from "./page/place/PlaceMap2.jsx"; // KakaoMap3를 import합니다.
 
-const KakaoMap = () => {
+const KakaoMap = ({ onPolygonSelect }) => {
   const [geojson, setGeojson] = useState(null);
-  const [selectedPlace, setSelectedPlace] = useState(null);
-  const [placeId, setPlaceId] = useState(null); // 고유번호 저장
-  const [center, setCenter] = useState([128.02025, 36.2]);
-  const [level, setLevel] = useState(13);
-  const [polygonName, setPolygonName] = useState("");
-
-  const calculateCenter = (coordinates) => {
-    let latSum = 0;
-    let lngSum = 0;
-    let numPoints = 0;
-
-    coordinates.forEach((polygonCoordinates) => {
-      polygonCoordinates.forEach((coordinate) => {
-        lngSum += coordinate[0];
-        latSum += coordinate[1];
-        numPoints++;
-      });
-    });
-
-    return [lngSum / numPoints, latSum / numPoints];
-  };
 
   useEffect(() => {
     const fetchGeojson = async () => {
@@ -93,15 +71,8 @@ const KakaoMap = () => {
       }
     });
 
-    const regionMap = {
-      "Array(200)": 0, // 서울
-      "Array(400)": 1, // 경기도
-      // 다른 지역도 추가
-    };
-
-    const displayArea = (coordinates, name, index) => {
+    const displayArea = (coordinates, name, ctprvnCd) => {
       const path = [];
-      const center = calculateCenter(coordinates);
 
       coordinates.forEach((polygonCoordinates) => {
         const polygonPath = [];
@@ -120,73 +91,40 @@ const KakaoMap = () => {
           fillOpacity: 0.7,
         });
 
+        path.push(polygonPath);
         polygons.push(polygon);
 
-        kakao.maps.event.addListener(
-          polygon,
-          "mouseover",
-          function (mouseEvent) {
-            polygon.setOptions({ fillColor: "#09f" });
-            customOverlay.setContent('<div class="area">' + name + "</div>");
-            customOverlay.setPosition(mouseEvent.latLng);
-            customOverlay.setMap(map);
-          },
-        );
-
-        kakao.maps.event.addListener(
-          polygon,
-          "mousemove",
-          function (mouseEvent) {
-            customOverlay.setPosition(mouseEvent.latLng);
-          },
-        );
+        kakao.maps.event.addListener(polygon, "mouseover", function (mouseEvent) {
+          polygon.setOptions({ fillColor: "#09f" });
+          customOverlay.setContent(`<div class="area">${name}</div>`);
+          customOverlay.setPosition(mouseEvent.latLng);
+          customOverlay.setMap(map);
+        });
 
         kakao.maps.event.addListener(polygon, "mouseout", function () {
           polygon.setOptions({ fillColor: "#fff" });
           customOverlay.setMap(null);
         });
 
-        kakao.maps.event.addListener(polygon, "click", function (mouseEvent) {
-          const content = `<div style="padding:2px;"><p><b>${name}</b></p></div>`;
+        kakao.maps.event.addListener(polygon, "click", function () {
+          onPolygonSelect(ctprvnCd);
+          const content = `<div class="info"><div class="title">${name}</div></div>`;
           infowindow.setContent(content);
           infowindow.setPosition(mouseEvent.latLng);
           infowindow.setMap(map);
-
-          const id = regionMap[`Array(${coordinates.length})`]; // 고유번호 설정
-          setPlaceId(id); // 고유번호 저장
-
-          setCenter([center[0], center[1]]);
-          setLevel(8);
-          setPolygonName(name);
-          setSelectedPlace(name);
         });
       });
     };
 
-    data.forEach((val, index) => {
-      const coordinates = val.geometry.coordinates;
-      const name = val.properties.CTP_KOR_NM;
-
-      console.log("Coordinates for:", name, coordinates);
-
-      displayArea(coordinates, name, index);
+    data.forEach((feature) => {
+      const coordinates = feature.geometry.coordinates;
+      const name = feature.properties.CTP_KOR_NM;
+      const ctprvnCd = feature.properties.CTPRVN_CD;
+      displayArea(coordinates, name, ctprvnCd);
     });
   };
 
-  return (
-    <Box>
-      <Box
-        id="pollution-map"
-        style={{
-          width: "100%",
-          height: "500px",
-          border: "1px solid #ccc",
-          borderRadius: "10px",
-        }}
-      ></Box>
-      {selectedPlace && <PlaceMap2 placeId={placeId} />}
-    </Box>
-  );
+  return <Box id="pollution-map" width="100%" height="500px" />;
 };
 
 export default KakaoMap;
