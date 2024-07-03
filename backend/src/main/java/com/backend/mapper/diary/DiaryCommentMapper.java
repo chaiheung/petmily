@@ -9,9 +9,9 @@ import java.util.List;
 public interface DiaryCommentMapper {
 
     @Insert("""
-            INSERT INTO diaryComment
-            (member_id,comment,nickname)
-            VALUES (#{memberId},#{comment},#{nickname})
+            INSERT INTO diary_comment
+            (member_id, comment, nickname)
+            VALUES (#{memberId}, #{comment}, #{nickname})
             """)
     public int diaryCommentInsert(DiaryComment diaryComment);
 
@@ -22,28 +22,26 @@ public interface DiaryCommentMapper {
                 c.inserted,
                 c.member_id,
                 m.nickname
-                FROM diaryComment c JOIN member m ON c.member_id = m.id
+                FROM diary_comment c JOIN member m ON c.member_id = m.id
                 ORDER BY c.id DESC
             """)
     List<DiaryComment> selectByDiaryId();
 
-
     @Delete("""
-            DELETE FROM diaryComment
+            DELETE FROM diary_comment
             WHERE id = #{id}
             """)
     int deleteById(Integer id);
 
-
     @Select("""
                 SELECT *
-                FROM diaryComment
+                FROM diary_comment
                 WHERE id = #{id}
             """)
     DiaryComment selectById(Integer id);
 
     @Update("""
-                UPDATE diaryComment
+                UPDATE diary_comment
                 SET comment = #{comment}
                 WHERE id = #{id}
             """)
@@ -51,23 +49,22 @@ public interface DiaryCommentMapper {
 
     @Select("""
             SELECT *
-            FROM diaryComment
+            FROM diary_comment
             WHERE id = #{id}
             """)
     int selectgetById(Integer id);
 
     @Select("""
             SELECT *
-            FROM diaryComment
+            FROM diary_comment
             ORDER BY inserted DESC
             LIMIT #{limit} OFFSET #{offset}
             """)
     List<DiaryComment> selectAll(@Param("limit") int limit, @Param("offset") int offset);
 
-
     @Select("""
             SELECT COUNT(*)
-            FROM diaryComment
+            FROM diary_comment
             """)
     int countAllComments();
 }
