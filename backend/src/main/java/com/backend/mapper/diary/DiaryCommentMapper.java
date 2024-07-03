@@ -13,7 +13,7 @@ public interface DiaryCommentMapper {
             (member_id,comment,nickname)
             VALUES (#{memberId},#{comment},#{nickname})
             """)
-    int diaryCommentInsert(DiaryComment diaryComment);
+    public int diaryCommentInsert(DiaryComment diaryComment);
 
     @Select("""
             SELECT
@@ -59,7 +59,7 @@ public interface DiaryCommentMapper {
     @Select("""
             SELECT *
             FROM diaryComment
-            ORDER BY id ASC
+            ORDER BY inserted DESC
             LIMIT #{limit} OFFSET #{offset}
             """)
     List<DiaryComment> selectAll(@Param("limit") int limit, @Param("offset") int offset);

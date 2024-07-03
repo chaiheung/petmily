@@ -28,6 +28,7 @@ export function DiaryCommentWrite({ onCommentAdded }) {
           status: "success",
           position: "top",
           description: "방명록이 등록되었습니다.",
+          duration: 10000,
         });
         onCommentAdded(res.data); // 새로운 댓글을 추가
         setComment(""); // 입력창 초기화

@@ -1,3 +1,4 @@
+import React, { useContext, useState } from "react";
 import {
   Box,
   Button,
@@ -14,34 +15,122 @@ import {
   Textarea,
   useToast,
 } from "@chakra-ui/react";
-import { ChevronDownIcon, ChevronUpIcon } from "@chakra-ui/icons";
-import React, { useContext, useState } from "react";
+import axios from "axios";
+import { useLocation, useNavigate } from "react-router-dom";
 import { LoginContext } from "../../component/LoginProvider.jsx";
+import { ChevronDownIcon, ChevronUpIcon } from "@chakra-ui/icons";
 
 export function BoardWrite() {
-  const { memberInfo } = useContext(LoginContext);
   const [title, setTitle] = useState("");
-  const [boardType, setBoardType] = useState("카테고리 선택");
   const [content, setContent] = useState("");
-  const [fileNameList, setFileNameList] = useState([]);
-  const [invisibledText, setInvisibledText] = useState(false);
+  const [writer, setWriter] = useState("");
+  const [files, setFiles] = useState([]);
+  const [invisibledText, setInvisibledText] = useState(true);
   const [disableSaveButton, setDisableSaveButton] = useState(false);
+  const [boardType, setBoardType] = useState("자유");
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { memberInfo, setMemberInfo } = useContext(LoginContext);
+  const memberId = memberInfo && memberInfo.id ? parseInt(memberInfo.id) : null;
+  const params = memberId ? { memberId } : {};
   const toast = useToast();
 
-  const handleSaveClick = () => {
-    // Save logic here
-    toast({
-      title: "저장 완료",
-      description: "게시글이 성공적으로 저장되었습니다.",
-      status: "success",
-      duration: 5000,
-      isClosable: true,
-    });
-  };
+  // const onDrop = useCallback(
+  //   (acceptedFiles) => {
+  //     files.reduce((acc, file) => acc + file.size, 0);
+  //     let hasOversizedFile = false;
+  //
+  //     acceptedFiles.forEach((file) => {
+  //       if (file.size > 10 * 1024 * 1024) {
+  //         hasOversizedFile = true;
+  //       }
+  //     });
+  //     if (totalSize > 10 * 1024 * 1024 || hasOversizedFile) {
+  //       setDisableSaveButton(true);
+  //       setInvisibledText(false);
+  //     } else {
+  //       setDisableSaveButton(false);
+  //       setInvisibledText(true);
+  //       setFiles([...files, ...acceptedFiles]);
+  //     }
+  //   },
+  //   [files],
+  // );
+  //
+  // const { getRootProps, getInputProps, isDragActive } = useDropzone({
+  //   onDrop,
+  //   accept: "image/*",
+  // });
 
-  const handleChange = (e) => {
-    // Handle file input change
-  };
+  function handleSaveClick() {
+    axios
+      .postForm("/api/board/add", {
+        title,
+        content,
+        boardType,
+        memberId: memberInfo.id,
+        files,
+      })
+      .then(() => {
+        navigate("/board/list");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+
+  React.useEffect(() => {
+    if (!memberInfo) {
+      toast({
+        title: "로그인 회원만 가능합니다",
+        duration: 3000,
+        isClosable: true,
+        status: "error",
+      });
+      const previousPath = location.state?.from || "/";
+      navigate(previousPath, { replace: true });
+    }
+    if (title.trim().length === 0 || content.trim().length === 0) {
+      setDisableSaveButton(true);
+    } else {
+      setDisableSaveButton(false);
+    }
+  }, [title, content]);
+
+  const fileNameList = files.map((file, index) => (
+    <li key={index}>{file.name}</li>
+  ));
+
+  function handleChange(e) {
+    const selectedFiles = Array.from(e.target.files);
+    let totalSize = 0;
+    let hasOversizedFile = false;
+
+    selectedFiles.forEach((file) => {
+      if (file.size > 100 * 1024 * 1024) {
+        hasOversizedFile = true;
+      }
+      totalSize += file.size;
+    });
+
+    if (totalSize > 100 * 1024 * 1024 || hasOversizedFile) {
+      setDisableSaveButton(true);
+      setInvisibledText(false);
+    } else {
+      setFiles(selectedFiles);
+      setInvisibledText(true);
+
+      if (title.trim().length === 0 || content.trim().length === 0) {
+        setDisableSaveButton(true);
+      } else {
+        setDisableSaveButton(false);
+      }
+    }
+  }
+
+  if (!memberInfo) {
+    return <Box />;
+  }
 
   return (
     <Center>

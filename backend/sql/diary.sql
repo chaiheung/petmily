@@ -83,6 +83,7 @@ CREATE TABLE diaryComment
 DROP TABLE diaryComment;
 
 
+
 SELECT *
 FROM diaryComment;
 
@@ -126,29 +127,31 @@ SET title   = 'yz1 234',
     content = '567 890'
 WHERE id % 3 = 2;
 
-CREATE TABLE members (
-                         member_id INT AUTO_INCREMENT PRIMARY KEY,
-                         intro TEXT,
-                         profile_image VARCHAR(255),
-                         guest_book TEXT,
-                         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+CREATE TABLE members
+(
+    member_id     INT AUTO_INCREMENT PRIMARY KEY,
+    intro         TEXT,
+    profile_image VARCHAR(255),
+    guest_book    TEXT,
+    created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
-CREATE TABLE diary_profile (
-                               member_id INT PRIMARY KEY,
-                               intro TEXT,
-                               guest_book TEXT,
-                               created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                               updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                               FOREIGN KEY (member_id) REFERENCES member(id)
+CREATE TABLE diary_profile
+(
+    member_id  INT PRIMARY KEY,
+    intro      TEXT,
+    guest_book TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (member_id) REFERENCES member (id)
 );
 
 ALTER TABLE diary_profile
     CHANGE COLUMN condition_message status_message TEXT;
 
 ALTER TABLE diary_profile
-DROP COLUMN created_at,
-DROP COLUMN updated_at;
+    DROP COLUMN created_at,
+    DROP COLUMN updated_at;
 
 DROP TABLE diary_file;

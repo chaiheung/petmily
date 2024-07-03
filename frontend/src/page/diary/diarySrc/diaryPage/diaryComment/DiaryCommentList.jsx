@@ -56,7 +56,7 @@ export function DiaryCommentList({ diaryCommentList }) {
                 <CardBody>
                   <HStack justifyContent="space-between" mb={2}>
                     <HStack>
-                      <Text fontWeight="bold">No.{diaryComment.id}</Text>
+                      <Text fontWeight="bold">No.{diaryComment.id / 10}</Text>
                       <Text fontWeight="bold">{diaryComment.nickname}</Text>
                       <Button
                         colorScheme="teal"

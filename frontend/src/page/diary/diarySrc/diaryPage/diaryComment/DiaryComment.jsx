@@ -20,13 +20,12 @@ export function DiaryComment() {
     Number(memberInfo?.id) === Number(extractUserIdFromDiaryId(diaryId));
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-
   useEffect(() => {
     const diaryId = generateDiaryId(memberInfo.id);
     const fetchComments = async (page) => {
       try {
         const res = await axios.get(`/api/diaryComment/list`, {
-          params: { id, page, pageSize: 5 },
+          params: { diaryId, page, pageSize: 5 },
         });
         setDiaryCommentList(res.data.comments || []); // null 체크 후 빈 배열 설정
         setTotalPages(res.data.totalPages || 1); // null 체크 후 기본값 설정
@@ -38,7 +37,7 @@ export function DiaryComment() {
       }
     };
     fetchComments(currentPage);
-  }, [id, memberInfo.id, currentPage]);
+  }, [diaryId, memberInfo.id, currentPage]);
 
   const handleCommentAdded = (newComment) => {
     setDiaryCommentList((prevList) => [newComment, ...prevList]); // 새로운 댓글을 맨 위에 추가

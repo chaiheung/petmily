@@ -32,15 +32,15 @@ import DeleteConfirmationModal from "./DeleteConfirmationModal";
 import ReportModal from "./ReportModal";
 
 const beat = keyframes`
-    0% {
-        transform: scale(1);
-    }
-    20% {
-        transform: scale(1.1);
-    }
-    40% {
-        transform: scale(1);
-    }
+  0% {
+    transform: scale(1);
+  }
+  20% {
+    transform: scale(1.1);
+  }
+  40% {
+    transform: scale(1);
+  }
 `;
 
 const HeartIcon = styled(FontAwesomeIcon)`
@@ -173,7 +173,11 @@ export function BoardView() {
   return (
     <Container maxW="container.xl" py={10}>
       <Button
-        onClick={() => navigate(`/board/list?boardType=${board.boardType}`)}
+        onClick={() =>
+          navigate(
+            `/board/list?boardType=${localStorage.getItem("currentBoardType")}`,
+          )
+        }
       >
         게시판으로 돌아가기
       </Button>
