@@ -34,7 +34,6 @@ export function DiaryCommentEdit() {
   const isLoggedIn = Boolean(access);
   const navigate = useNavigate();
   const diaryId = generateDiaryId(memberInfo.id);
-  console.log(diaryComment.id);
 
   useEffect(() => {
     axios
@@ -50,6 +49,8 @@ export function DiaryCommentEdit() {
   }, [id, toast, navigate]);
 
   function handleCommentSubmit() {
+    if (!diaryComment) return;
+
     axios
       .put(`/api/diaryComment/edit`, {
         id: diaryComment.id, // 수정할 댓글의 ID 사용
@@ -66,7 +67,7 @@ export function DiaryCommentEdit() {
         navigate(`/diary/${diaryId}/comment/view/${id}`);
       })
       .catch((err) => {
-        if (err.response.status === 400) {
+        if (err.response && err.response.status === 400) {
           toast({
             status: "error",
             description: "댓글이 수정되지 않았습니다.",

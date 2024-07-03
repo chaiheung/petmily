@@ -82,6 +82,7 @@ CREATE TABLE diaryComment
 );
 DROP TABLE diaryComment;
 
+ALTER TABLE diaryComment RENAME TO diary_comment;
 
 
 SELECT *

@@ -39,8 +39,6 @@ export function DiaryBoardList() {
   const diaryId = useParams().diaryId;
   const isOwner =
     Number(memberInfo?.id) === Number(extractUserIdFromDiaryId(diaryId));
-  const diaryIndex = diaryBoardList.findIndex((item) => item.id === Number(id));
-  const diaryNumber = diaryBoardList.length - diaryIndex;
 
   useEffect(() => {
     const params = new URLSearchParams(searchParams);
@@ -130,7 +128,7 @@ export function DiaryBoardList() {
                   )}
                 >
                   <Td w="10%" textAlign="center">
-                    {diaryNumber}
+                    {diaryBoard.id}
                   </Td>
                   <Td w="30%" textAlign="center">
                     {diaryBoard.title}
